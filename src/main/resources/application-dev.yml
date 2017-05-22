@@ -1,0 +1,10 @@
+server:
+  port: 8081
+  context-path: /girl
+cupSize: B
+user:
+  age: 20
+  gender: male
+spring:
+  thymeleaf:
+    prefix: classpath:/templates/pages/
