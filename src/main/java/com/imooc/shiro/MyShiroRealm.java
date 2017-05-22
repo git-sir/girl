@@ -19,29 +19,28 @@ import javax.annotation.PostConstruct;
 public class MyShiroRealm extends AuthorizingRealm {
     private static final Logger logger = LoggerFactory.getLogger(MyShiroRealm.class);
 
-//    private IUserDao userDao;
-
     /**
-     * 权限认证，为当前登录的Subject授予角色和权限
-     * @see ：本例中该方法的调用时机为需授权资源被访问时
-     * @see ：并且每次访问需授权资源时都会执行该方法中的逻辑，这表明本例中默认并未启用AuthorizationCache
-     * @see ：如果连续访问同一个URL（比如刷新），该方法不会被重复调用，Shiro有一个时间间隔（也就是cache时间，在ehcache-shiro.xml中配置），超过这个时间间隔再刷新页面，该方法会被执行
+     * 权限认证，为当前登录的Subject授予角色和权限。该方法只有当客户端访问的URL是需要特定的角色或权限时才会被调用
+     *
+     * 并且每次访问需授权资源时都会执行该方法中的逻辑，这表明本例中默认并未启用AuthorizationCache
+     * 如果连续访问同一个URL（比如刷新），该方法不会被重复调用，Shiro有一个时间间隔（也就是cache时间，在ehcache-shiro.xml中配置），超过这个时间间隔再刷新页面，该方法会被执行
      */
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
-        System.out.println(getClass()+"执行doGetAuthorizationInfo方法");
+        logger.info(getClass()+"执行doGetAuthorizationInfo方法");
         SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
 
-        Object principal = principalCollection.getPrimaryPrincipal();	//获取用户名
-        System.out.println("为用户"+principal+"授权");
+        LoginUser loginUser = (LoginUser)principalCollection.getPrimaryPrincipal();
+        String userName = loginUser.getUserName();//获取用户名
+        logger.info("为用户"+userName+"授权");
 
 		/*
 		 * 为通过验证(登录)的用户授权,即为其指定角色(权限).哪些角色(权限)可以访问哪些网页,在applicationContext-shiro.xml中
 		 * 的shiroFilter这个bean的filterChainDefinitions属性已指定了权限规则
 		 */
-        if("admin".equals(principal)){
+        if("admin".equals(userName)){
             info.addRole("admin");	//用户名为admin时，为该用户授权admin角色
         }
-        if("manager".equals(principal)){
+        if("manager".equals(userName)){
             info.addRole("manager");
         }
 
@@ -56,10 +55,10 @@ public class MyShiroRealm extends AuthorizingRealm {
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(
             AuthenticationToken token) throws AuthenticationException {
-        System.out.println(getClass()+"执行AuthenticationInfo方法");
-        System.out.println("token类型: "+token.getClass());//在
-        System.out.println("Principal: "+token.getPrincipal());
-        System.out.println("Credentia: "+token.getCredentials());
+        logger.info(getClass()+"执行doGetAuthenticationInfo方法");
+        logger.info("token类型: "+token.getClass());//在
+        logger.info("Principal: "+token.getPrincipal());
+        logger.info("Credentia: "+token.getCredentials());
 
         //1. 从 token 中获取登录的 username! 注意不需要获取 password.
 
@@ -83,7 +82,7 @@ public class MyShiroRealm extends AuthorizingRealm {
         //设置盐值:
         String source = "abcd";
         ByteSource credentialsSalt = new Md5Hash(source);
-        System.out.println("盐值credentialsSalt: "+credentialsSalt);
+        logger.info("盐值credentialsSalt: "+credentialsSalt);
 
         //当前 Realm 的 name
         String realmName = getName();

@@ -105,14 +105,15 @@ public class ShiroConfig {
 //        filterChainDefinitionMap.put("/pages/login/**", "anon");
         //managerPage这个URL用roles过滤器拦截,只有拥有manager这个角色的用户才可以访问
         filterChainDefinitionMap.put("/managerPage", "roles[manager]");
-        //该URL用于用户在登录页面输入账号密码后向后台发送请求验证时的URL，所以不能让shiro拦截
+        //该URL用于用户在登录页面输入账号密码后向后台发送请求验证时的URL，所以不需要拦截
         filterChainDefinitionMap.put("/shiroLogin/**", "anon");
 //        filterChainDefinitionMap.put("/bindAccount/**", "anon");
 //        filterChainDefinitionMap.put("/pages/bind/**", "anon");
 //        filterChainDefinitionMap.put("/favicon.ico/**", "anon");
 
 //        filterChainDefinitionMap.put("/**", "log,csrf,authc");
-        filterChainDefinitionMap.put("/**", "myFilter,authc");
+//        filterChainDefinitionMap.put("/**", "myFilter,authc");
+        filterChainDefinitionMap.put("/**", "authc");
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
         return shiroFilterFactoryBean;
     }

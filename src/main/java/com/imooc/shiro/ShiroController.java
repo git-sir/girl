@@ -8,6 +8,8 @@ import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.subject.Subject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,9 +23,10 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 public class ShiroController {
 
+    private static final Logger logger = LoggerFactory.getLogger(ShiroController.class);
     @RequestMapping(value = "login")
     public String login (HttpServletRequest httpRequest, Model model) {
-        System.out.println(getClass().getSimpleName()+"拦截到"+httpRequest.getRequestURI());
+        logger.info(getClass().getSimpleName()+"拦截到"+httpRequest.getRequestURI());
         if(SecurityUtils.getSubject().isAuthenticated()){
             return "redirect:index";
         }
@@ -37,9 +40,9 @@ public class ShiroController {
     @RequestMapping(value = "shiroLogin")
     public String login(@RequestParam("username") String username,
                         @RequestParam("password") String password){
-        System.out.println(getClass().getSimpleName()+"拦截到/girl/shiroLogin");
+        logger.info(getClass().getSimpleName()+"拦截到/girl/shiroLogin");
         if(ShiroUtil.login(username,password)){
-            System.out.println(username+"登陆成功");
+            logger.info(username+"登陆成功");
             return "redirect:index";
         }
         return "loginPage";
@@ -66,14 +69,13 @@ public class ShiroController {
         int hashIterations = 1024;		//迭代加密的次数
 
         Object result = new SimpleHash(hashAlgorithmName, credentials, salt, hashIterations);
-        System.out.println(result);
-        System.out.println("加密后的数据："+result.toString());
+        logger.info("加密后的数据："+result.toString());
     }
 
 //    @RequiresRoles("manager")//@RequiresRoles用于指定可以访问managerPage这个URL的角色,也可以在ShiroConfig中配置过滤器来实现
     @RequestMapping("managerPage")
     public String managerPage(){
-        System.out.println("访问managerPage");
+        logger.info("访问managerPage");
 		/*
 		 * 注：这里的"managerPage"页面没有指定访问权限的话,则用户登录后便可以直接打开
 		 */
