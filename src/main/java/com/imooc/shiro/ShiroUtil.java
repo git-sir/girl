@@ -9,6 +9,8 @@ import org.apache.shiro.subject.Subject;
 import org.apache.shiro.subject.support.DefaultSubjectContext;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 
@@ -17,6 +19,7 @@ import java.util.Collection;
  */
 public class ShiroUtil {
 
+    private static final Logger logger = LoggerFactory.getLogger(ShiroUtil.class);
     public static LoginUser getContextUser() {
         return (LoginUser) SecurityUtils.getSubject().getPrincipal();
     }
@@ -45,6 +48,18 @@ public class ShiroUtil {
         }
         return true;
     }
+
+    /**
+     * 当前用户退出
+     */
+    public static void logoutCurUser(){
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.isAuthenticated()) {
+            logger.info("当前用户"+getContextUser().getUserName()+"退出登录");
+            subject.logout(); // session 会销毁，在SessionListener监听session销毁，清理权限缓存
+        }
+    }
+
     /**
      * 指定帐号登出操作；
      * current为TRUE时，表示若userName刚好为当前正在操作的这个账号，也同样执行登出操作
@@ -70,4 +85,5 @@ public class ShiroUtil {
             //sessionManager.getSessionDAO().delete(session);
         }
     }
+
 }

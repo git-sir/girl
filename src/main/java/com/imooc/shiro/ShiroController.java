@@ -51,8 +51,8 @@ public class ShiroController {
     @RequestMapping("logout")
     public String logout(){
 
-        ShiroUtil.logout(ShiroUtil.getContextUser().getUserName(),true);
-        return "loginPage";
+        ShiroUtil.logoutCurUser();
+        return "redirect:loginPage";
     }
     //这个URL用于：在用户已登录的情况下，再次访问登录页面时重定向到成功页面
     @RequestMapping("index")
